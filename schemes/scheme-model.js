@@ -1,15 +1,5 @@
 const db = require("../data/dbConfig");
 
-module.exports = {
-  find,
-  findById,
-  findSteps,
-  add,
-  addStep,
-  remove,
-  update
-};
-
 function find() {
   return db("schemes");
 }
@@ -29,14 +19,15 @@ function findSteps(id) {
       "steps.instructions"
     )
     .innerJoin("steps", "schemes.id", "=", "steps.scheme_id")
-    .where("schemes.id", id);
+    .where("schemes.id", id)
+    .orderBy("steps.step_number");
 }
 
-function add(schemaData) {
+const add = schemaData => {
   return db("schemes")
     .insert(schemaData)
-    .then(([id]) => this.findById(id));
-}
+    .then(([id]) => findById(id));
+};
 
 function addStep(stepData, id) {
   return db("steps")
@@ -60,3 +51,13 @@ function update(changes, id) {
     .update(changes)
     .then(count => (count ? this.findById(id) : null));
 }
+
+module.exports = {
+  find,
+  findById,
+  findSteps,
+  add,
+  addStep,
+  remove,
+  update
+};
